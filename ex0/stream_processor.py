@@ -32,6 +32,7 @@ class NumericProcessor(DataProcessor):
             try:
                 item += 0
             except (ValueError, TypeError):
+                print(f"'{item}' from {data} is not numeric")
                 return False
         print("Validation: Numeric data verified")
         return True
@@ -48,12 +49,14 @@ class NumericProcessor(DataProcessor):
                 summed += item
             avg = summed / amount
         else:
-            print(f"'{data}' is not numeric")
-            return data
+            return None
         return amount, summed, avg
     
     def format_output(self, result: Tuple):
-        return f"Output: Processed {result[0]} numeric values, sum={result[1]}, avg={result[2]}\n"
+        if result is not None:
+            return f"Output: Processed {result[0]} numeric values, sum={result[1]}, avg={result[2]}\n"
+        else:
+            return "Data could not be processed\n"
     
 
 class TextProcessor(DataProcessor):
@@ -75,25 +78,28 @@ class TextProcessor(DataProcessor):
         chars: int = 0
         words: int = 0
         if self.validate(data):
-            if data[0] is not " " and data[0] is not '\0':
+            if data[0] != " " and data[0] != '\0':
                 words = 1
             for char in data:
-                if char == " " and data[chars + 1] is not " " and data[chars + 1] is not '\0':
+                if char == " " and data[chars + 1] != " " and data[chars + 1] != '\0':
                     words += 1
                 chars += 1
         else:
             print(f"'{data}' is not text")
-            return data
+            return None
         return chars, words
     
     def format_output(self, result: str) -> str:
-        return f"Output: Processed text: {result[0]} characters, {result[1]} words"
+        if result is not None:
+            return f"Output: Processed text: {result[0]} characters, {result[1]} words"
+        else:
+            return "Data could not be processed"
 
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
     pn = NumericProcessor()
-    numbers: list = [1, 2, "b", 4, 5]
+    numbers: list = [1, 2, 3, 4, 5]
     result_n = pn.process(numbers)
     print(f"{pn.format_output(result_n)}")
     pt = TextProcessor()
