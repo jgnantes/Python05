@@ -42,12 +42,16 @@ class NumericProcessor(DataProcessor):
         print("Initializing Numeric Processor...")
         print(f"Processing data: {data}")
         if self.validate(data):
-            amount = 0
-            summed = 0
-            for item in data:
-                amount += 1
-                summed += item
-            avg = summed / amount
+            try:
+                amount = 0
+                summed = 0
+                for item in data:
+                    amount += 1
+                    summed += item
+                avg = summed / amount
+            except ZeroDivisionError:
+                print("Numeric data is empty |", end = ' ')
+                return None
         else:
             return None
         return amount, summed, avg
@@ -74,14 +78,19 @@ class TextProcessor(DataProcessor):
     def process(self, data: str) -> str:
         """ """
         print("Initializing Text Processor...")
-        print(f"Processing data: {data}")
+        print(f'Processing data: "{data}"')
         chars: int = 0
         words: int = 0
         if self.validate(data):
-            if data[0] != " " and data[0] != '\0':
-                words = 1
-            for char in data:
-                if char == " " and data[chars + 1] != " " and data[chars + 1] != '\0':
+            if data:
+                chars += 1
+                if data[0] != " ":
+                    words += 1
+            else:
+                print("Text data is empty |", end = ' ')
+                return None
+            for char in data[1:]:
+                if char == " " and data[chars - 1] != " ":
                     words += 1
                 chars += 1
         else:
@@ -99,10 +108,10 @@ class TextProcessor(DataProcessor):
 if __name__ == "__main__":
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
     pn = NumericProcessor()
-    numbers: list = [1, 2, 3, 4, 5]
+    numbers: List = [1, 2 , 3, 4, 5]
     result_n = pn.process(numbers)
     print(f"{pn.format_output(result_n)}")
     pt = TextProcessor()
-    string: str = "Hey Ho Let's Go"
+    string: str = "oui, mon chien parle français"
     result_t = pt.process(string)
     print(f"{pt.format_output(result_t)}")
