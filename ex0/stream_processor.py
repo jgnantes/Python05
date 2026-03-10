@@ -21,52 +21,62 @@ class DataProcessor(ABC):
             return f"formatted: {result}"
         else:
             return None
-    
+
 
 class NumericProcessor(DataProcessor):
     """ """
 
-    def validate(self, data: List) -> bool:
+    def validate(self, data: Any) -> bool:
         """ """
-        for item in data:
-            try:
-                item += 0
-            except (ValueError, TypeError):
-                print(f"'{item}' from {data} is not numeric")
-                return False
+        try:
+            test = int(data)
+            test += 0
+        except (TypeError, ValueError):
+                for item in data:
+                    try:
+                        item += 0
+                    except (ValueError, TypeError):
+                        print(f"'{data}' is not a list of only numeric values")
+                        return False
         print("Validation: Numeric data verified")
         return True
-    
-    def process(self, data: List) -> str:
+
+    def process(self, data: Any) -> str:
         """ """
         print("Initializing Numeric Processor...")
         print(f"Processing data: {data}")
+        amount: int = 0
+        summed: int = 0
         if self.validate(data):
             try:
-                amount = 0
-                summed = 0
                 for item in data:
                     amount += 1
-                    summed += item
-                avg = summed / amount
+                    summed += int(item)
+            except TypeError:
+                amount = 1
+                summed = data
             except ZeroDivisionError:
                 print("Numeric data is empty |", end = ' ')
                 return None
         else:
             return None
+        avg = summed / amount
         return amount, summed, avg
-    
-    def format_output(self, result: Tuple):
+
+    def format_output(self, result: str):
+        """ """
         if result is not None:
-            return f"Output: Processed {result[0]} numeric values, sum={result[1]}, avg={result[2]}\n"
+            output: str = f"Output: Processed {result[0]} numeric values, "
+            output += f"sum={result[1]}, avg={result[2]}\n"
+            return output
         else:
             return "Data could not be processed\n"
-    
+
 
 class TextProcessor(DataProcessor):
     """ """
 
-    def validate(self, data: str) -> bool:
+    def validate(self, data: Any) -> bool:
         """ """
         try:
             data + ""
@@ -75,7 +85,7 @@ class TextProcessor(DataProcessor):
         print("Validation: Text data verified")
         return True
     
-    def process(self, data: str) -> str:
+    def process(self, data: Any) -> str:
         """ """
         print("Initializing Text Processor...")
         print(f'Processing data: "{data}"')
@@ -99,19 +109,53 @@ class TextProcessor(DataProcessor):
         return chars, words
     
     def format_output(self, result: str) -> str:
+        """ """
         if result is not None:
-            return f"Output: Processed text: {result[0]} characters, {result[1]} words"
+            output: str = f"Output: Processed text: {result[0]} characters, "
+            output += f"{result[1]} words\n"
+            return output
         else:
-            return "Data could not be processed"
+            return "Data could not be processed\n"
+
+
+class LogProcessor(DataProcessor):
+    """ """
+
+    def validate(self, data: Any) -> bool:
+        """ """
+        logs = {"ERROR", "INFO", "WARNING"}
+        try:
+            data += ""
+            i: int = 0
+            for char in data:
+                if char == ":":
+                    break
+                i += 1
+            level = data[:i]
+            if level not in logs or level == data:
+                print(f"{data} is not a valid log format")
+                return False
+        except (ValueError, TypeError):
+            print(f"{data} is not a valid log format")
+            return False
+        print("Validation: Log entry verified")
+        return True
+
+
+    def process(self, data: Any) -> str:
+        """ """
+
+    def format_output(self, result: str) -> str:
+        """ """
 
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
     pn = NumericProcessor()
-    numbers: List = [1, 2 , 3, 4, 5]
+    numbers: List = [1, 2, 3, 4, 5]
     result_n = pn.process(numbers)
     print(f"{pn.format_output(result_n)}")
     pt = TextProcessor()
-    string: str = "oui, mon chien parle français"
+    string: str = "ton cheval est très joli"
     result_t = pt.process(string)
     print(f"{pt.format_output(result_t)}")
