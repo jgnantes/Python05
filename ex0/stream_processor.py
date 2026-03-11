@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple
+from typing import Any, List
 from abc import ABC, abstractmethod
 
 
@@ -31,12 +31,12 @@ class NumericProcessor(DataProcessor):
             data = int(data)
             data += 0
         except (TypeError, ValueError):
-                for item in data:
-                    try:
-                        item += 0
-                    except (ValueError, TypeError):
-                        print(f"'{data}' is not a list of only numeric values")
-                        return False
+            for item in data:
+                try:
+                    item += 0
+                except (ValueError, TypeError):
+                    print(f"'{data}' is not a list of only numeric values")
+                    return False
         return True
 
     def process(self, data: Any) -> str:
@@ -54,7 +54,7 @@ class NumericProcessor(DataProcessor):
                         amount += 1
                         summed += int(item)
                 except ZeroDivisionError:
-                    print("Numeric data is empty |", end = ' ')
+                    print("Numeric data is empty |", end=' ')
                     return None
             else:
                 return None
@@ -86,7 +86,7 @@ class TextProcessor(DataProcessor):
                 if data[0] != " ":
                     words += 1
             else:
-                print("Text data is empty |", end = ' ')
+                print("Text data is empty |", end=' ')
                 return None
             for char in data[1:]:
                 if char == " " and data[chars - 1] != " ":
