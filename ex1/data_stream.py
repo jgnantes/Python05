@@ -59,11 +59,18 @@ class SensorStream(DataStream):
         ) -> List[Any]:
         """ """
         filtered_data: List[Any] = super().filter_data(data_batch, criteria)
-        returning_data: List[Any] = [
-            self._parse_data(item) for item in filtered_data
-            if self._parse_data(item) != (None, None)
-        ]
+        if criteria == None:
+            returning_data: List[Any] = [
+                self._parse_data(item) for item in filtered_data
+                if self._parse_data(item) != (None, None)
+            ]
         return returning_data
 
+    def process_batch(self, data_batch: List[Any]) -> str:
+        """ """
+        pass
+
 if __name__ == "__main__":
-    
+    test = SensorStream("SENSOR_001")
+    data: list = ["a:b", "b:a", 3124]
+    print(test.filter_data(data))
