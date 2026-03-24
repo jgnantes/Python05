@@ -10,6 +10,14 @@ class DataStream(ABC):
         self.stream_id: str = stream_id
         self.stats: Dict[str, Union[str, int, float]] = {}
 
+    def _check_nbr(self, nbr: Any) -> bool:
+        """ """
+        try:
+            nbr = int(nbr)
+        except (ValueError, TypeError):
+            return False
+        return True
+
     def _parse_data(self, data: str) -> Tuple[Optional[str], Optional[Any]]:
         """ """
         length: int = 0
@@ -30,8 +38,11 @@ class DataStream(ABC):
         criteria: Optional[str] = None
         ) -> List[Any]:
         """ """
+        while criteria is None:
+            break
         filtered_data: List[Any] = [
-            item for item in data_batch if isinstance(item, str)
+            item for item in data_batch 
+            if isinstance(item, str)
             ]
         return filtered_data
 
@@ -47,6 +58,7 @@ class DataStream(ABC):
 
 class SensorStream(DataStream):
     """ """
+    type: str = "Environmental Data"
 
     def __init__(self, stream_id: str) -> None:
         """ """
@@ -59,18 +71,49 @@ class SensorStream(DataStream):
         ) -> List[Any]:
         """ """
         filtered_data: List[Any] = super().filter_data(data_batch, criteria)
-        if criteria == None:
-            returning_data: List[Any] = [
-                self._parse_data(item) for item in filtered_data
-                if self._parse_data(item) != (None, None)
-            ]
+        returning_data: List[Any] = [
+            (key, int(value)) for item in filtered_data
+            for key, value in [self._parse_data(item)]
+            if (key, value) != (None, None)
+            and (key == "temp" or key == "humidity" or key == "pressure")
+            and self._check_nbr(value)
+        ]
+        if criteria is not None:
+            if criteria == "critical":
+                criteria_data: List[Any] = [
+                ]
+                pass
         return returning_data
 
     def process_batch(self, data_batch: List[Any]) -> str:
         """ """
-        pass
+        processed_batch: List[Any] = []
+        amount: int = 0
+        amount_temp: int = 0
+        avg: float = 0
+        for item in data_batch:
+            try:
+                self.stats[item[0]] = item[1]
+                amount += 1
+                processed_batch += [f"{item[0]}:{item[1]}"]
+                if item[0] == "temp":
+                    try:
+                        avg += item[1]
+                        amount_temp += 1
+                    except ValueError:
+                        print(f"{item[1]} is not numeric")
+                        continue
+            except (ValueError, TypeError):
+                print(f"{item} is not a [key:value] element")
+                continue
+        if avg != 0 and amount_temp > 0:
+            avg = avg / amount_temp
+            self.stats["temp"] = avg
+        return f"Processing sensor batch: {processed_batch}\nSensor analysis: {amount} readings processed, avg temp: {avg}°C"
 
 if __name__ == "__main__":
-    test = SensorStream("SENSOR_001")
-    data: list = ["a:b", "b:a", 3124]
-    print(test.filter_data(data))
+    s_inst = SensorStream("SENSOR_001")
+    s_data = s_inst.filter_data(["temp:2", "humidity:4", "temp:82", "humidity:-42"])
+    print(s_inst.process_batch(s_data))
+    print(s_inst.stats)
+    print(s_inst.type)
