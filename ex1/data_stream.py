@@ -35,14 +35,14 @@ class DataStream(ABC):
         return None, None
 
     def filter_data(
-        self, 
-        data_batch: List[Any], 
+        self,
+        data_batch: List[Any],
         criteria: Optional[str] = None
-        ) -> List[Any]:
+    ) -> List[Any]:
         """ """
         if criteria is None or criteria is not None:
             filtered_data: List[Any] = [
-                item for item in data_batch 
+                item for item in data_batch
                 if isinstance(item, str)
             ]
         return filtered_data
@@ -66,10 +66,10 @@ class SensorStream(DataStream):
         super().__init__(stream_id)
 
     def filter_data(
-        self, 
-        data_batch: List[Any], 
+        self,
+        data_batch: List[Any],
         criteria: Optional[str] = None
-        ) -> List[Any]:
+    ) -> List[Any]:
         """ """
         filtered_data: List[Any] = super().filter_data(data_batch, criteria)
         if criteria is None:
@@ -118,7 +118,7 @@ class SensorStream(DataStream):
         if temp is not None:
             string += f"avg temp: {temp}°C"
         else:
-            string += f"no temperature data available"
+            string += "no temperature data available"
         return string
 
 
@@ -131,10 +131,10 @@ class TransactionStream(DataStream):
         super().__init__(stream_id)
 
     def filter_data(
-        self, 
-        data_batch: List[Any], 
+        self,
+        data_batch: List[Any],
         criteria: Optional[str] = None
-        ) -> List[Any]:
+    ) -> List[Any]:
         """ """
         filtered_data: List[Any] = super().filter_data(data_batch, criteria)
         if criteria is None:
@@ -198,10 +198,10 @@ class EventStream(DataStream):
         super().__init__(stream_id)
 
     def filter_data(
-        self, 
-        data_batch: List[Any], 
+        self,
+        data_batch: List[Any],
         criteria: Optional[str] = None
-        ) -> List[Any]:
+    ) -> List[Any]:
         """ """
         filtered_data: List[Any] = super().filter_data(data_batch, criteria)
         valid_events: List[str] = ["login", "logout", "error"]
@@ -258,10 +258,10 @@ class StreamProcessor:
         self.streams += [stream]
 
     def filter_streams(
-        self, 
-        data_batches: List[List[Any]], 
+        self,
+        data_batches: List[List[Any]],
         criteria: Optional[str] = None
-        ) -> List[List[Any]]:
+    ) -> List[List[Any]]:
         """ """
         results: List[List[Any]] = []
         i: int = 0
