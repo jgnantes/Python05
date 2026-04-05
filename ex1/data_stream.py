@@ -101,7 +101,7 @@ class SensorStream(DataStream):
         ]
         processed_batch: List[Any] = []
         amount: int = 0
-        temp: float = None
+        temp: float = 0
         for item in filtered_batch:
             try:
                 self.stats[item[0]] = item[1]
@@ -115,7 +115,7 @@ class SensorStream(DataStream):
 
         string: str = f"Processing sensor batch: {processed_batch}\n"
         string += f"Sensor analysis: {amount} readings processed, "
-        if temp is not None:
+        if temp != 0:
             string += f"avg temp: {temp}°C"
         else:
             string += "no temperature data available"

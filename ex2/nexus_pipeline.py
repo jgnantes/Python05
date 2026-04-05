@@ -110,6 +110,7 @@ class OutputStage:
 
     def process(self, data: Any) -> Any:
         """Formats final pipeline output"""
+        string: str = ""
         if isinstance(data, dict):
             if "sensor" in data and "label" in data and "status" in data:
                 return (
@@ -118,7 +119,6 @@ class OutputStage:
                 )
 
             if "fields" in data and "count" in data:
-                string: str = ""
                 string += "User activity logged: "
                 string += f"{data['count']} fields processed"
                 return string
@@ -130,7 +130,6 @@ class OutputStage:
                 )
 
             if data.get("type") == "text_stream":
-                string: str = ""
                 string += "Stream summary: "
                 string += f"{data['count']} text entries processed"
                 return string

@@ -41,7 +41,7 @@ class NumericProcessor(DataProcessor):
 
     def process(self, data: Any) -> str:
         """ """
-        summed = 0
+        summed: float = 0
         amount: int = 0
         avg: float = 0
         if self.validate(data):
@@ -58,9 +58,9 @@ class NumericProcessor(DataProcessor):
                     avg = summed / amount
                 except ZeroDivisionError:
                     print("Numeric data is empty |", end=' ')
-                    return None
+                    return ""
         else:
-            return None
+            return ""
         if summed == int(summed):
             summed = int(summed)
         result: str = f"Processed {amount} numeric values, "
@@ -97,10 +97,10 @@ class TextProcessor(DataProcessor):
                         previous_space = False
             else:
                 print("Text data is empty |", end=' ')
-                return None
+                return ""
         else:
             print(f"'{data}' is not text")
-            return None
+            return ""
         result: str = f"Processed text: {chars} characters, "
         result += f"{words} words"
         return super().format_output(result)
@@ -142,7 +142,7 @@ class LogProcessor(DataProcessor):
             message: str = data[(i + 1):]
         else:
             print(f"'{data}' is not a valid log format")
-            return None
+            return ""
         if level == "ERROR" or level == "WARNING":
             result: str = f'[ALERT] {level} level detected:{message}'
         elif level == "INFO":
